@@ -5,6 +5,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Migrations\20220215122237_AutHorTableFullyUpdated.cs" />
+    <Compile Remove="Migrations\20220215122237_AutHorTableFullyUpdated.Designer.cs" />
+    <Compile Remove="Migrations\20220215122728_AtuhotUpdatedFull.cs" />
+    <Compile Remove="Migrations\20220215122728_AtuhotUpdatedFull.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="FluentValidation.AspNetCore" Version="10.3.6" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="3.1.22" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.22" />
@@ -17,6 +24,7 @@
 
   <ItemGroup>
     <Folder Include="Apps\UserApi\" />
+    <Folder Include="wwwroot\assets\img\" />
   </ItemGroup>
 
 

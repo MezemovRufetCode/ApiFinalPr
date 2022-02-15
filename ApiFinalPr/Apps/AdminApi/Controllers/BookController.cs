@@ -1,6 +1,9 @@
-﻿using ApiFinalPr.Apps.AdminApi.DTOs.BookDtos;
+﻿using ApiFinalPr.Apps.AdminApi.DTOs;
+using ApiFinalPr.Apps.AdminApi.DTOs.BookDtos;
 using ApiFinalPr.Data.DAL;
 using ApiFinalPr.Data.Entities;
+using EduHomeBEProject.Extensions;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -15,10 +18,12 @@ namespace ApiFinalProject.Data.DAL.Entities
     public class BooksController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly IWebHostEnvironment _env;
 
-        public BooksController(AppDbContext context)
+        public BooksController(AppDbContext context, IWebHostEnvironment env)
         {
             _context = context;
+            _env = env;
         }
 
 
@@ -34,6 +39,7 @@ namespace ApiFinalProject.Data.DAL.Entities
                 Price = book.Price,
                 Cost = book.Cost,
                 DisplayStatus = book.DisplayStatus,
+                Image = book.Image,
                 CreatedAt = book.CreatedAt,
                 ModifiedAt = book.ModifiedAt
             };
@@ -46,16 +52,18 @@ namespace ApiFinalProject.Data.DAL.Entities
             var query = _context.Books.Where(x => !x.IsDeleted);
             if (!string.IsNullOrWhiteSpace(search))
                 query = query.Where(x => x.Name.Contains(search));
-
-            BookListDto listDto = new BookListDto
+            ListDto<BookListItemDto> listDto = new ListDto<BookListItemDto>
             {
-                Items = query.Skip((page - 1) * 6).Take(6).Select(x => new BookListItemDto
+
+                Items = query.Skip((page - 1) * 12).Take(12).Select(x => new BookListItemDto
                 {
                     Id = x.Id,
                     Name = x.Name,
                     Price = x.Price,
                     Cost = x.Cost,
-                    DisplayStatus = x.DisplayStatus
+                    Image = x.Image,
+                    DisplayStatus = x.DisplayStatus,
+                    AuthorId=x.AuthorId
                 }
                 ).ToList(),
                 TotalCount = query.Count()
@@ -64,16 +72,22 @@ namespace ApiFinalProject.Data.DAL.Entities
         }
 
         [HttpPost("")]
-        public IActionResult Create(BookCreateDto bookDto)
+        public IActionResult Create([FromForm] BookCreateDto bookDto)
         {
-            //DTO nu birbasha add eleye bilmediyimiz ucun yaradiriq
             Book book = new Book
             {
                 Name = bookDto.Name,
                 Price = bookDto.Price,
                 Cost = bookDto.Cost,
                 DisplayStatus = bookDto.DisplayStatus,
+                AuthorId=bookDto.AuthorId
             };
+            book.Image = bookDto.ImageFile.SaveImg(_env.WebRootPath, "assets/img");
+
+
+            //DTO nu birbasha add eleye bilmediyimiz ucun yaradiriq
+
+
 
             _context.Books.Add(book);
             _context.SaveChanges();
@@ -81,11 +95,13 @@ namespace ApiFinalProject.Data.DAL.Entities
         }
 
         [HttpPut("{id}")]
-        public IActionResult Update(int id, BookCreateDto bookDto)
+        public IActionResult Update(int id, [FromForm] BookCreateDto bookDto)
         {
             Book existBook = _context.Books.FirstOrDefault(b => b.Id == id);
             if (existBook == null) return NotFound();
 
+            ApiFinalPr.Helpers.Helper.DeleteImg(_env.WebRootPath, "assets/img", existBook.Image);
+            existBook.Image = bookDto.ImageFile.SaveImg(_env.WebRootPath, "assets/img");
             existBook.Name = bookDto.Name;
             existBook.Price = bookDto.Price;
             existBook.Cost = bookDto.Cost;

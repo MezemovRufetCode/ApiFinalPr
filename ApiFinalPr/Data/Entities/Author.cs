@@ -7,15 +7,12 @@ using System.Threading.Tasks;
 
 namespace ApiFinalPr.Data.Entities
 {
-    public class Book:BaseEntity
+    public class Author:BaseEntity
     {
         public string Name { get; set; }
-        public string Image { get; set; }
-        public decimal Price { get; set; }
-        public decimal Cost { get; set; }
         public bool IsDeleted { get; set; }
-        public bool DisplayStatus { get; set; }
-        public int AuthorId { get; set; }
-        public Author Author { get; set; }
+        public string Image { get; set; }
+        [NotMapped]
+        public List<Book> Books { get; set; }
     }
 }

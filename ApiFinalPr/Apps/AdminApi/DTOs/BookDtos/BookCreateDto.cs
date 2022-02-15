@@ -1,4 +1,6 @@
-﻿using FluentValidation;
+﻿using EduHomeBEProject.Extensions;
+using FluentValidation;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +15,8 @@ namespace ApiFinalPr.Apps.AdminApi.DTOs.BookDtos
         public decimal Cost { get; set; }
         public bool IsDeleted { get; set; }
         public bool DisplayStatus { get; set; }
+        public int AuthorId { get; set; }
+        public IFormFile ImageFile { get; set; }
     }
 
     public class BookCreateDtoValidator : AbstractValidator<BookCreateDto>
@@ -26,7 +30,24 @@ namespace ApiFinalPr.Apps.AdminApi.DTOs.BookDtos
             RuleFor(b => b).Custom((x, context) =>
             {
                 if (x.Price < x.Cost)
+                {
                     context.AddFailure("Cost", "Price must be higher than Cost");
+                }
+                if (x.ImageFile == null)
+                {
+                    context.AddFailure("ImageFile", "You should include image");
+                }
+                if (x.ImageFile != null)
+                {
+                    if (!x.ImageFile.CheckSize(2))
+                    {
+                        context.AddFailure("ImageFile", "Image size max can be 2mb");
+                    }
+                    if (!x.ImageFile.IsImage())
+                    {
+                        context.AddFailure("ImageFile", "You should include only image file");
+                    }
+                }
             });
         }
     }
