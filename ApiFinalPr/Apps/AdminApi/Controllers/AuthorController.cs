@@ -29,7 +29,7 @@ namespace ApiFinalPr.Apps.AdminApi.Controllers
         [HttpGet("{id}")]
         public IActionResult Get(int id)
         {
-            Author author = _context.Authors.FirstOrDefault(b => b.Id == id);
+            Author author = _context.Authors.FirstOrDefault(b => b.Id == id && !b.IsDeleted);
             if (author == null) return NotFound();
             AuthorGetDto authorDto = new AuthorGetDto
             {
@@ -40,7 +40,7 @@ namespace ApiFinalPr.Apps.AdminApi.Controllers
                 ModifiedAt = author.ModifiedAt
             };
 
-            return StatusCode(200, author);
+            return StatusCode(200, authorDto);
         }
 
         [HttpGet("")]
@@ -82,6 +82,20 @@ namespace ApiFinalPr.Apps.AdminApi.Controllers
             exauthor.Image = authorDto.ImageFile.SaveImg(_env.WebRootPath, "assets/img");
             exauthor.Name = authorDto.Name;
             exauthor.ModifiedAt = DateTime.UtcNow;
+            _context.SaveChanges();
+            return NoContent();
+        }
+
+
+        //burda problem var ki author silinende kitablar da silinsin yoxsa qalsin
+
+        [HttpDelete("{id}")]
+        public IActionResult Delete(int id)
+        {
+            Author author = _context.Authors.FirstOrDefault(a => a.Id == id);
+            if (author == null) return NotFound();
+
+            _context.Authors.Remove(author);
             _context.SaveChanges();
             return NoContent();
         }

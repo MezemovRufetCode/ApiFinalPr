@@ -4,14 +4,16 @@ using ApiFinalPr.Data.DAL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace ApiFinalPr.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220215181327_GenreUpdatedQuickly")]
+    partial class GenreUpdatedQuickly
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -77,7 +79,7 @@ namespace ApiFinalPr.Migrations
                     b.Property<bool>("DisplayStatus")
                         .HasColumnType("bit");
 
-                    b.Property<int>("GenreId")
+                    b.Property<int?>("GenreId")
                         .HasColumnType("int");
 
                     b.Property<string>("Image")
@@ -154,9 +156,7 @@ namespace ApiFinalPr.Migrations
 
                     b.HasOne("ApiFinalPr.Data.Entities.Genre", "Genre")
                         .WithMany("Books")
-                        .HasForeignKey("GenreId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("GenreId");
                 });
 #pragma warning restore 612, 618
         }

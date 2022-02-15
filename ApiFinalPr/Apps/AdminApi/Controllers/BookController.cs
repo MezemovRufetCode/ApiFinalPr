@@ -44,7 +44,7 @@ namespace ApiFinalProject.Data.DAL.Entities
                 ModifiedAt = book.ModifiedAt
             };
 
-            return StatusCode(200, book);
+            return StatusCode(200, bookDto);
         }
         [HttpGet("")]
         public IActionResult GetAll(int page = 1, string search = null)
@@ -106,6 +106,7 @@ namespace ApiFinalProject.Data.DAL.Entities
             existBook.Price = bookDto.Price;
             existBook.Cost = bookDto.Cost;
             existBook.DisplayStatus = bookDto.DisplayStatus;
+            existBook.AuthorId = bookDto.AuthorId;
             //existBook.IsDeleted = bookDto.IsDeleted;
             _context.SaveChanges();
             return NoContent();
