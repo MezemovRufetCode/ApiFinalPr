@@ -16,6 +16,7 @@ namespace ApiFinalPr.Apps.AdminApi.DTOs.BookDtos
         public bool IsDeleted { get; set; }
         public bool DisplayStatus { get; set; }
         public int AuthorId { get; set; }
+        public int GenreId { get; set; }
         public IFormFile ImageFile { get; set; }
     }
 
@@ -23,6 +24,8 @@ namespace ApiFinalPr.Apps.AdminApi.DTOs.BookDtos
     {
         public BookCreateDtoValidator()
         {
+            RuleFor(b => b.AuthorId).NotNull().WithMessage("You should include author id").GreaterThanOrEqualTo(1);
+            RuleFor(b => b.GenreId).NotNull().WithMessage("You should include genre id").GreaterThanOrEqualTo(1);
             RuleFor(b => b.Name).NotNull().WithMessage("Name is required").MaximumLength(50).WithMessage("Max length can be 50");
             RuleFor(b => b.Price).NotNull().WithMessage("Price is required").GreaterThanOrEqualTo(0).WithMessage("Price can not be smaller than 0");
             RuleFor(b => b.Cost).NotNull().WithMessage("Cost is required").GreaterThanOrEqualTo(0).WithMessage("Cost can not be smaller than 0");

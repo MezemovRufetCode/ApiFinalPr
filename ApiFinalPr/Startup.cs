@@ -1,9 +1,12 @@
 using ApiFinalPr.Apps.AdminApi.DTOs.BookDtos;
+using ApiFinalPr.Apps.AdminApi.Profiles;
 using ApiFinalPr.Data.DAL;
+using ApiFinalPr.Data.Entities;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -29,11 +32,25 @@ namespace ApiFinalPr
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers().AddFluentValidation(x=>x.RegisterValidatorsFromAssemblyContaining<BookCreateDto>());
+            services.AddControllers().AddFluentValidation(x => x.RegisterValidatorsFromAssemblyContaining<BookCreateDto>());
             services.AddDbContext<AppDbContext>(option =>
             {
                 option.UseSqlServer(Configuration.GetConnectionString("Default"));
             });
+
+            services.AddIdentity<AppUser, IdentityRole>(option =>
+            {
+                option.Password.RequiredLength = 8;
+                option.Password.RequireNonAlphanumeric = false;
+                option.Password.RequireUppercase = false;
+                option.Password.RequireDigit = false;
+            }).AddDefaultTokenProviders().AddEntityFrameworkStores<AppDbContext>();
+
+            services.AddAutoMapper(option =>
+            {
+                option.AddProfile(new MapProfile());
+            });
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -47,7 +64,7 @@ namespace ApiFinalPr
             app.UseHttpsRedirection();
 
             app.UseRouting();
-
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

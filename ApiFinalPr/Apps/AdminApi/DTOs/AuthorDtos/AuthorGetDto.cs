@@ -12,5 +12,6 @@ namespace ApiFinalPr.Apps.AdminApi.DTOs.AuthorDtos
         public string Image { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime ModifiedAt { get; set; }
+        public int BooksCount { get; set; }
     }
 }

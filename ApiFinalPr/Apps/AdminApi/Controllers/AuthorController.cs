@@ -2,10 +2,12 @@
 using ApiFinalPr.Apps.AdminApi.DTOs.AuthorDtos;
 using ApiFinalPr.Data.DAL;
 using ApiFinalPr.Data.Entities;
+using AutoMapper;
 using EduHomeBEProject.Extensions;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,27 +21,21 @@ namespace ApiFinalPr.Apps.AdminApi.Controllers
     {
         private readonly AppDbContext _context;
         private readonly IWebHostEnvironment _env;
+        private readonly IMapper _mapper;
 
-        public AuthorController(AppDbContext context,IWebHostEnvironment env)
+        public AuthorController(AppDbContext context,IWebHostEnvironment env,IMapper mapper)
         {
             _context = context;
             _env = env;
+            _mapper = mapper;
         }
 
         [HttpGet("{id}")]
         public IActionResult Get(int id)
         {
-            Author author = _context.Authors.FirstOrDefault(b => b.Id == id && !b.IsDeleted);
+            Author author = _context.Authors.Include(a=>a.Books).FirstOrDefault(b => b.Id == id && !b.IsDeleted);
             if (author == null) return NotFound();
-            AuthorGetDto authorDto = new AuthorGetDto
-            {
-                Id = author.Id,
-                Name = author.Name,
-                Image = author.Image,
-                CreatedAt = author.CreatedAt,
-                ModifiedAt = author.ModifiedAt
-            };
-
+            AuthorGetDto authorDto = _mapper.Map<AuthorGetDto>(author);
             return StatusCode(200, authorDto);
         }
 
@@ -95,7 +91,7 @@ namespace ApiFinalPr.Apps.AdminApi.Controllers
             Author author = _context.Authors.FirstOrDefault(a => a.Id == id);
             if (author == null) return NotFound();
 
-            _context.Authors.Remove(author);
+            author.IsDeleted=true;
             _context.SaveChanges();
             return NoContent();
         }
