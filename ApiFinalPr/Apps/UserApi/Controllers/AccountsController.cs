@@ -1,11 +1,16 @@
 ﻿using ApiFinalPr.Apps.UserApi.DTOs.AccountDto;
 using ApiFinalPr.Data.Entities;
+using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace ApiFinalPr.Apps.UserApi
@@ -16,11 +21,13 @@ namespace ApiFinalPr.Apps.UserApi
     {
         private readonly UserManager<AppUser> _usermanager;
         private readonly RoleManager<IdentityRole> _rolemanager;
+        private readonly IMapper _mapper;
 
-        public AccountsController(UserManager<AppUser> userManager,RoleManager<IdentityRole> roleManager)
+        public AccountsController(UserManager<AppUser> userManager,RoleManager<IdentityRole> roleManager,IMapper mapper)
         {
             _usermanager = userManager;
             _rolemanager = roleManager;
+            _mapper = mapper;
         }
 
         [HttpPost("register")]
@@ -49,5 +56,59 @@ namespace ApiFinalPr.Apps.UserApi
         //    result = await _rolemanager.CreateAsync(new IdentityRole("SuperAdmin"));
         //    return Ok();
         //}
+
+        [HttpPost("login")]
+        public async Task<IActionResult> Login(LoginDto loginDto)
+        {
+            AppUser user = await _usermanager.FindByNameAsync(loginDto.Username);
+            if (user == null) return NotFound();
+           
+
+            if (!await _usermanager.CheckPasswordAsync(user,loginDto.Password))
+                return NotFound();
+
+
+            //jwt
+
+            List<Claim> claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.Name,user.UserName),
+                new Claim(ClaimTypes.NameIdentifier,user.Id),
+                new Claim("FullName",user.FullName),
+               
+            };
+
+            var roles = await _usermanager.GetRolesAsync(user);
+            claims.AddRange(roles.Select(x => new Claim(ClaimTypes.Role, x)).ToList());
+            string keyStr = "e3b0b6b9-eb9e-474f-8827-c5bd624e0e8e";
+            SymmetricSecurityKey key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(keyStr));
+            SigningCredentials credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            JwtSecurityToken token = new JwtSecurityToken(
+                claims: claims,
+                signingCredentials: credentials,
+                expires: DateTime.Now.AddDays(3),
+                issuer: "https://localhost:44311/",
+                audience: "https://localhost:44311/"
+                );
+
+            string tokenStr = new JwtSecurityTokenHandler().WriteToken(token);
+
+            return Ok(new { token = tokenStr });
+        }
+
+        [Authorize(Roles =("Member"))]
+        public async Task<IActionResult> Get()
+        {
+            AppUser user =await _usermanager.FindByNameAsync(User.Identity.Name);
+            AccountGetDto accountDto = _mapper.Map<AccountGetDto>(user);
+            //    new AccountGetDto
+            //{
+            //    Id = user.Id,
+            //    UserName = user.UserName,
+            //    FullName = user.FullName
+            //};
+            return Ok(accountDto);
+        }
     }
 }

@@ -1,8 +1,10 @@
 using ApiFinalPr.Apps.AdminApi.DTOs.BookDtos;
 using ApiFinalPr.Apps.AdminApi.Profiles;
+using ApiFinalPr.Apps.UserApi.Profiles;
 using ApiFinalPr.Data.DAL;
 using ApiFinalPr.Data.Entities;
 using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -13,6 +15,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -37,7 +40,6 @@ namespace ApiFinalPr
             {
                 option.UseSqlServer(Configuration.GetConnectionString("Default"));
             });
-
             services.AddIdentity<AppUser, IdentityRole>(option =>
             {
                 option.Password.RequiredLength = 8;
@@ -49,8 +51,22 @@ namespace ApiFinalPr
             services.AddAutoMapper(option =>
             {
                 option.AddProfile(new MapProfile());
+                option.AddProfile(new UserApiProfile());
             });
-
+            services.AddAuthentication(option =>
+            {
+                option.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+                option.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                option.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(cfg =>
+            {
+                cfg.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+                {
+                    ValidIssuer = "https://localhost:44311/",
+                    ValidAudience = "https://localhost:44311/",
+                    IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes("e3b0b6b9-eb9e-474f-8827-c5bd624e0e8e"))
+                };
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
