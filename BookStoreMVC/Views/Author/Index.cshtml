@@ -1,0 +1,33 @@
+﻿@model AuthorListDto
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Authors</h1>
+<div class="container">
+    <div class="row">
+        <div class="col-8 mx-auto">
+            <table class="table">
+                <thead class="thead-dark">
+                    <tr>
+                        <th scope="col">Id</th>
+                        <th scope="col">Name</th>
+                        <th scope="col">Image</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Items)
+                    {
+                        <tr>
+                            <td>@item.Id</td>
+                            <td>@item.Name</td>
+                            @*<td><img src="@item.Image"/></td>*@
+                        </tr>
+                    }
+
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+</div>

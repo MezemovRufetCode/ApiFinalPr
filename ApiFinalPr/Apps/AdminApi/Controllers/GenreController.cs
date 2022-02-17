@@ -44,7 +44,7 @@ namespace ApiFinalPr.Apps.AdminApi.Controllers
             ListDto<GenreListItemDto> listDto = new ListDto<GenreListItemDto>
             {
                 TotalCount = query.Count(),
-                Items = query.Skip((page - 1) * 5).Take(5).Select(x => new GenreListItemDto { Id = x.Id, Name = x.Name}).ToList()
+                Items = query.Skip((page - 1) * 15).Take(15).Select(x => new GenreListItemDto { Id = x.Id, Name = x.Name}).ToList()
             };
             return Ok(listDto);
         }

@@ -19,24 +19,24 @@ namespace ApiFinalPr.Apps.AdminApi.DTOs.AuthorDtos
         public AuthorCreateDtoValidator()
         {
             RuleFor(a => a.Name).NotNull().WithMessage("Include author name").MaximumLength(20).WithMessage("Max length can be 20");
-            RuleFor(a => a).Custom((x, context) =>
-            {
-                if (x.ImageFile == null)
-                {
-                    context.AddFailure("ImageFile", "You should include author image");
-                }
-                if (x.ImageFile != null)
-                {
-                    if (!x.ImageFile.CheckSize(2))
-                    {
-                        context.AddFailure("ImageFile", "Image size max can be 2mb");
-                    }
-                    if (!x.ImageFile.IsImage())
-                    {
-                        context.AddFailure("ImageFile", "You should include only image file");
-                    }
-                }
-            });
+            //RuleFor(a => a).Custom((x, context) =>
+            //{
+            //    if (x.ImageFile == null)
+            //    {
+            //        context.AddFailure("ImageFile", "You should include author image");
+            //    }
+            //    if (x.ImageFile != null)
+            //    {
+            //        if (!x.ImageFile.CheckSize(2))
+            //        {
+            //            context.AddFailure("ImageFile", "Image size max can be 2mb");
+            //        }
+            //        if (!x.ImageFile.IsImage())
+            //        {
+            //            context.AddFailure("ImageFile", "You should include only image file");
+            //        }
+            //    }
+            //});
         }
     }
 }

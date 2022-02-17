@@ -46,7 +46,7 @@ namespace ApiFinalPr.Apps.AdminApi.Controllers
             ListDto<AuthorListItemDto> listDto = new ListDto<AuthorListItemDto>
             {
                 TotalCount = query.Count(),
-                Items = query.Skip((page - 1) * 5).Take(5).Select(x => new AuthorListItemDto { Id = x.Id, Name = x.Name, Image = x.Image }).ToList()
+                Items = query.Skip((page - 1) * 10).Take(10).Select(x => new AuthorListItemDto { Id = x.Id, Name = x.Name, Image = x.Image }).ToList()
             };
             return Ok(listDto);
         }
