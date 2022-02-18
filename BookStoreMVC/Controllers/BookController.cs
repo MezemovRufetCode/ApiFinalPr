@@ -1,4 +1,5 @@
 ﻿using BookStoreMVC.DTOs.BookDto;
+using BookStoreMVC.DTOs.BookDtos;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System;
@@ -36,8 +37,9 @@ namespace BookStoreMVC.Controllers
         }
         [HttpPost]
 
-        public async Task<IActionResult> CreateBook(BookListItemDto bookDto)
+        public async Task<IActionResult> CreateBook(BookCreateDto bookDto)
         {
+            if (!ModelState.IsValid) return View();
             using (HttpClient client = new HttpClient())
             {
                 byte[] byteArr = null;

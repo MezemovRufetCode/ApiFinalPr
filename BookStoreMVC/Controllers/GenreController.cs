@@ -37,7 +37,7 @@ namespace BookStoreMVC.Controllers
 
         [HttpPost]
 
-        public async Task<IActionResult> CreateGenre(GenreListItemDto genreDto)
+        public async Task<IActionResult> CreateGenre(GenreCreateDto genreDto)
         {
             using (HttpClient client = new HttpClient())
             {
@@ -57,8 +57,6 @@ namespace BookStoreMVC.Controllers
                     }
                 }
             }
-            //helekilik
-            return View("Index", "Genre");
         }
 
         public async Task<IActionResult> Delete(int id)

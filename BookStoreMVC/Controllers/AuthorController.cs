@@ -38,8 +38,9 @@ namespace BookStoreMVC.Controllers
         }
         [HttpPost]
 
-        public async Task<IActionResult> CreateAuthor(AuthorListItemDto authorDto)
+        public async Task<IActionResult> CreateAuthor(AuthorCreateDto authorDto)
         {
+            if (!ModelState.IsValid) return View();
             using (HttpClient client = new HttpClient())
             {
                 byte[] byteArr = null;

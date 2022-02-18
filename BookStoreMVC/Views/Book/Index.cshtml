@@ -10,7 +10,7 @@
 </div>
 <div class="container">
     <div class="row">
-        <div class="col-10 mx-auto">
+        <div class="col-12 mx-auto">
             <table class="table">
                 <thead class="thead-dark">
                     <tr>
@@ -18,10 +18,10 @@
                         <th scope="col">Name</th>
                         <th scope="col">Cost</th>
                         <th scope="col">Price</th>
-                        <th scope="col">Author Id</th>
-                        <th scope="col">Gerne Id</th>
+                        @*<th scope="col">Author Id</th>
+                        <th scope="col">Gerne Id</th>*@
                         <th scope="col">Image</th>
-                        <th scope="col">Delete</th>
+                        <th scope="col">Settings</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -32,8 +32,8 @@
                             <td>@item.Name</td>
                             <td>@item.Price</td>
                             <td>@item.Cost</td>
-                            <td>@item.AuthorId</td>
-                            <td>@item.GenreId</td>
+                            @*<td>@item.AuthorId</td>
+                            <td>@item.GenreId</td>*@
                             <td>@item.Image"/></td>
                             <td><a asp-controller="book" asp-action="delete" asp-route-id="@item.Id" class="btn btn-danger">Delete</a></td>
                         </tr>
