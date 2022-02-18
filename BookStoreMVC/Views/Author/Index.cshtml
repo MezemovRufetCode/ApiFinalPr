@@ -4,6 +4,9 @@
 }
 
 <h1>Authors</h1>
+<div style="display:flex;justify-content:flex-end">
+    <a asp-controller="author" asp-action="createauthor" class="btn btn-success" style="margin:20px 10px">Create</a>
+</div>
 <div class="container">
     <div class="row">
         <div class="col-8 mx-auto">
@@ -13,6 +16,7 @@
                         <th scope="col">Id</th>
                         <th scope="col">Name</th>
                         <th scope="col">Image</th>
+                        <th scope="col">Settings</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -21,7 +25,8 @@
                         <tr>
                             <td>@item.Id</td>
                             <td>@item.Name</td>
-                            @*<td><img src="@item.Image"/></td>*@
+                            <td>@item.Image</td>
+                            <td><a asp-controller="author" asp-action="delete" asp-route-id="@item.Id" class="btn btn-danger">Delete</a></td>
                         </tr>
                     }
 

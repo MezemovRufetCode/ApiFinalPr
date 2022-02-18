@@ -4,7 +4,9 @@
 }
 
 <h1>Genres</h1>
-
+<div style="display:flex;justify-content:flex-end">
+    <a asp-controller="genre" asp-action="creategenre" class="btn btn-success" style="margin:20px 10px">Create</a>
+</div>
 <div class="container">
     <div class="row">
         <div class="col-8 mx-auto">
@@ -13,15 +15,17 @@
                     <tr>
                         <th scope="col">Id</th>
                         <th scope="col">Name</th>
+                        <th scope="col">Settings</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach (var item in Model.Items)
                     {
-                        <tr>
-                            <td>@item.Id</td>
-                            <td>@item.Name</td>
-                        </tr>
+                    <tr>
+                        <td>@item.Id</td>
+                        <td>@item.Name</td>
+                        <td><a asp-controller="genre" asp-action="delete" asp-route-id="@item.Id" class="btn btn-danger">Delete</a></td>
+                    </tr>
                     }
                 </tbody>
             </table>
@@ -29,3 +33,43 @@
         </div>
     </div>
 </div>
+<div class="container" style="display:flex;justify-content:center">
+    <div class="row justify-content-center mt-5">
+        <nav aria-label="...">
+            <ul class="pagination justify-content-center">
+                @if (ViewBag.CurrentPage == 1)
+                {
+                    <li class="page-item disabled">
+                        <a class="page-link" asp-controller="category" asp-action="index" asp-route-page="@(ViewBag.CurrentPage-1)">Previous</a>
+                    </li>
+                }
+                else
+                {
+                    <li class="page-item">
+                        <a class="page-link" asp-controller="category" asp-action="index" asp-route-page="@(ViewBag.CurrentPage-1)">Previous</a>
+                    </li>
+                }
+
+                @for (int i = 1; i <= ViewBag.TotalPage; i++)
+                {
+                    <li class="page-item @(ViewBag.CurrentPage==i ? "active" : "")
+                                " style="@(ViewBag.CurrentPage==i ? "pointer-events:none" : "")"><a asp-controller="category" asp-action="index" asp-route-page="@i" class="page-link">@i</a></li>
+                            }
+
+                @if (ViewBag.CurrentPage == ViewBag.TotalPage)
+                {
+                    <li class="page-item disabled">
+                        <a class="page-link" asp-controller="category" asp-action="index" asp-route-page="@(ViewBag.CurrentPage+1)">Next</a>
+                    </li>
+                }
+                else
+                {
+                    <li class="page-item">
+                        <a class="page-link" asp-controller="category" asp-action="index" asp-route-page="@(ViewBag.CurrentPage+1)">Next</a>
+                    </li>
+                }
+            </ul>
+        </nav>
+    </div>
+</div>
+

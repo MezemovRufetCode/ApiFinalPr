@@ -61,5 +61,19 @@ namespace BookStoreMVC.Controllers
             return View("Index", "Genre");
         }
 
+        public async Task<IActionResult> Delete(int id)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                var response = await client.DeleteAsync("https://localhost:44311/admin/api/genre/" + id.ToString());
+                var responseStr = await response.Content.ReadAsStringAsync();
+                if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
+                {
+                    return RedirectToAction("Index", "Genre");
+                }
+            }
+            return RedirectToAction("Index", "Genre");
+        }
+
     }
 }
