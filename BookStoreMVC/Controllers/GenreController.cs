@@ -73,5 +73,46 @@ namespace BookStoreMVC.Controllers
             return RedirectToAction("Index", "Genre");
         }
 
+
+
+        public async Task<IActionResult> Update(int id)
+        {
+            GenreListItemDto genreDto;
+            using (HttpClient client = new HttpClient())
+            {
+                var response = await client.GetAsync($"https://localhost:44311/admin/api/genre/{id}");
+                var responseStr = await response.Content.ReadAsStringAsync();
+                if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    genreDto = JsonConvert.DeserializeObject<GenreListItemDto>(responseStr);
+                    return View(genreDto);
+                }
+            }
+            return View();
+        }
+        [HttpPost]
+        public async Task<IActionResult> Update(GenreListItemDto genreDto)
+        {
+            string endpoints = $"https://localhost:44311/admin/api/genre/{genreDto.Id}";
+            using (HttpClient client = new HttpClient())
+            {
+                StringContent content = new StringContent(JsonConvert.SerializeObject(genreDto), Encoding.UTF8, "application/json");
+                using (var response = await client.PutAsync(endpoints, content))
+                {
+                    if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
+                    {
+                        return RedirectToAction("Index", "Genre");
+                    }
+                    else
+                    {
+                        return BadRequest();
+                    }
+
+                }
+
+            }
+
+
+        }
     }
 }

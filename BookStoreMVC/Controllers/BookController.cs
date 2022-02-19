@@ -95,5 +95,67 @@ namespace BookStoreMVC.Controllers
             return RedirectToAction("Index", "Book");
         }
 
+
+
+        public async Task<IActionResult> Update(int id)
+        {
+            BookListItemDto authorDto;
+            using (HttpClient client = new HttpClient())
+            {
+                var response = await client.GetAsync($"https://localhost:44311/admin/api/books/{id}");
+                var responseStr = await response.Content.ReadAsStringAsync();
+                if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    authorDto = JsonConvert.DeserializeObject<BookListItemDto>(responseStr);
+                    return View(authorDto);
+                }
+                else
+                {
+                    return NotFound();
+                }
+            }
+
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Update(BookListItemDto bookDto)
+        {
+            string endpoints = $"https://localhost:44311/admin/api/books/{bookDto.Id}";
+            using (HttpClient client = new HttpClient())
+            {
+                var multipartContent = new MultipartFormDataContent();
+                byte[] byteArr = null;
+                if (bookDto.ImageFile != null)
+                {
+                    using (var ms = new MemoryStream())
+                    {
+                        bookDto.ImageFile.CopyTo(ms);
+                        byteArr = ms.ToArray();
+                        var byteArrContent = new ByteArrayContent(byteArr);
+                        byteArrContent.Headers.ContentType = MediaTypeHeaderValue.Parse(bookDto.ImageFile.ContentType);
+                        multipartContent.Add(byteArrContent, "ImageFile", bookDto.ImageFile.FileName);
+                    }
+                }
+                multipartContent.Add(new StringContent(JsonConvert.SerializeObject(bookDto.Name), Encoding.UTF8, "application/json"), "Name");
+                multipartContent.Add(new StringContent(JsonConvert.SerializeObject(bookDto.Price), Encoding.UTF8, "application/json"), "Price");
+                multipartContent.Add(new StringContent(JsonConvert.SerializeObject(bookDto.Cost), Encoding.UTF8, "application/json"), "Cost");
+                multipartContent.Add(new StringContent(JsonConvert.SerializeObject(bookDto.AuthorId), Encoding.UTF8, "application/json"), "AuthorId");
+                multipartContent.Add(new StringContent(JsonConvert.SerializeObject(bookDto.GenreId), Encoding.UTF8, "application/json"), "GenreId");
+                multipartContent.Add(new StringContent(JsonConvert.SerializeObject(bookDto.IsDeleted), Encoding.UTF8, "application/json"), "IsDeleted");
+                multipartContent.Add(new StringContent(JsonConvert.SerializeObject(bookDto.DisplayStatus), Encoding.UTF8, "application/json"), "DisplayStatus");
+                using (var response = await client.PutAsync(endpoints, multipartContent))
+                {
+                    if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
+                    {
+                        return RedirectToAction("Index", "Book");
+                    }
+                    else
+                    {
+                        return Json(response.StatusCode);
+                    }
+                }
+            }
+        }
+
     }
 }

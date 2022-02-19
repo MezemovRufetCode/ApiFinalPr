@@ -9,7 +9,7 @@
 </div>
 <div class="container">
     <div class="row">
-        <div class="col-8 mx-auto">
+        <div class="col-10 mx-auto">
             <table class="table">
                 <thead class="thead-dark">
                     <tr>
@@ -26,7 +26,9 @@
                             <td>@item.Id</td>
                             <td>@item.Name</td>
                             <td>@item.Image</td>
-                            <td><a asp-controller="author" asp-action="delete" asp-route-id="@item.Id" class="btn btn-danger">Delete</a></td>
+                            <td><a asp-controller="author" asp-action="delete" asp-route-id="@item.Id" class="btn btn-danger">Delete</a>
+                                <a asp-controller="author" asp-action="update" asp-route-id="@item.Id" class="btn btn-warning">Update</a>
+                            </td>
                         </tr>
                     }
 
